@@ -1,0 +1,45 @@
+---
+import LanguageSwitcher from './LanguageSwitcher.astro';
+import { getLangFromUrl, useTranslations, localizePath, stripLangPrefix } from '../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const currentPath = stripLangPrefix(Astro.url.pathname);
+
+const navItems = [
+  { key: 'nav.home' as const, path: '/' },
+  { key: 'nav.gallery' as const, path: '/gallery' },
+  { key: 'nav.about' as const, path: '/about' },
+  { key: 'nav.contact' as const, path: '/contact' },
+];
+---
+
+<header class="sticky top-0 z-50 bg-white/85 backdrop-blur-md border-b border-neutral-100">
+  <div class="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
+    <a
+      href={localizePath('/', lang)}
+      class="text-xl tracking-[0.25em] uppercase hover:opacity-70 transition-opacity"
+    >
+      AldeArts
+    </a>
+
+    <nav class="hidden md:flex items-center gap-10">
+      {navItems.map(({ key, path }) => {
+        const isActive = currentPath === path || (path !== '/' && currentPath.startsWith(path));
+        return (
+          <a
+            href={localizePath(path, lang)}
+            class:list={[
+              'text-xs uppercase tracking-[0.2em] transition-colors',
+              isActive ? 'text-black' : 'text-neutral-500 hover:text-black',
+            ]}
+          >
+            {t(key)}
+          </a>
+        );
+      })}
+    </nav>
+
+    <LanguageSwitcher />
+  </div>
+</header>

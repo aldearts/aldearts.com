@@ -1,0 +1,28 @@
+---
+import { getLangFromUrl, stripLangPrefix } from '../i18n/utils';
+import { defaultLang } from '../i18n/ui';
+
+const currentLang = getLangFromUrl(Astro.url);
+const pathWithoutLang = stripLangPrefix(Astro.url.pathname) || '/';
+
+function getUrlForLang(lang: string): string {
+  if (lang === defaultLang) return pathWithoutLang;
+  return pathWithoutLang === '/' ? `/${lang}` : `/${lang}${pathWithoutLang}`;
+}
+---
+
+<div class="flex items-center gap-3 text-xs uppercase tracking-[0.25em]">
+  <a
+    href={getUrlForLang('tr')}
+    class:list={['transition-colors', currentLang === 'tr' ? 'text-black' : 'text-neutral-400 hover:text-black']}
+  >
+    TR
+  </a>
+  <span class="text-neutral-300">/</span>
+  <a
+    href={getUrlForLang('en')}
+    class:list={['transition-colors', currentLang === 'en' ? 'text-black' : 'text-neutral-400 hover:text-black']}
+  >
+    EN
+  </a>
+</div>

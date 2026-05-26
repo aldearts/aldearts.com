@@ -1,0 +1,28 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { useTranslations } from '../i18n/utils';
+
+const lang = 'tr';
+const t = useTranslations(lang);
+---
+
+<Layout title={t('about.title')}>
+  <section class="max-w-3xl mx-auto px-6 pt-20 pb-32">
+    <p class="text-xs uppercase tracking-[0.3em] text-neutral-400 mb-4">
+      AldeArts
+    </p>
+    <h1 class="text-5xl md:text-6xl font-light tracking-tight mb-12">
+      {t('about.title')}
+    </h1>
+
+    <div class="prose prose-neutral max-w-none text-neutral-700 leading-relaxed space-y-6 text-lg">
+      <p>
+        {t('about.placeholder')}
+      </p>
+      <p class="text-neutral-400 italic text-base">
+        Bu sayfa biyografi, sanat felsefesi ve özgeçmiş bilgileri ile doldurulacak. Daha sonra Markdown
+        ile içerik eklenebilir.
+      </p>
+    </div>
+  </section>
+</Layout>
