@@ -103,10 +103,12 @@ const mediumLabel = mediumLabelsShort[work.medium][lang];
 
 <script>
   /*
-    Playback model — intentionally simple, no scroll-based autoplay.
+    Playback model:
       Desktop (hover-capable): play on mouseenter, pause on mouseleave.
-      Touch:                   tap the ▶ button to play, tap again to pause.
-    Reduced motion: video hidden via CSS; tap still works as fallback.
+      Touch (no hover):        autoplay when card enters viewport,
+                               pause when it leaves. Tap ▶ to override.
+      Reduced motion:          video hidden via CSS; tap still works.
+    The ▶ button is always a manual toggle on top of either mode.
   */
   function setupExhibitionPlayer() {
     const cards = document.querySelectorAll<HTMLElement>('.work-card');
@@ -157,6 +159,22 @@ const mediumLabel = mediumLabelsShort[work.medium][lang];
         card.addEventListener('mouseleave', () => pause(card));
       }
     });
+
+    // Touch / no-hover devices: autoplay in viewport, pause out of view.
+    // Hysteresis (play >= 0.55, pause < 0.25) avoids flicker on the edge.
+    if (!hoverDevice && !reduceMotion && 'IntersectionObserver' in window) {
+      const io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            const card = entry.target as HTMLElement;
+            if (entry.intersectionRatio >= 0.55) play(card);
+            else if (entry.intersectionRatio < 0.25) pause(card);
+          });
+        },
+        { threshold: [0, 0.25, 0.55, 1] }
+      );
+      cards.forEach((card) => io.observe(card));
+    }
   }
 
   setupExhibitionPlayer();
