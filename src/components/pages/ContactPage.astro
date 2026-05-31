@@ -1,0 +1,117 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getLangFromUrl, useTranslations } from '../../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+---
+
+<Layout title={t('contact.title')} description={t('contact.subtitle')}>
+  <section class="max-w-7xl mx-auto px-6 pt-20 md:pt-28 pb-32">
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
+      <!-- Eyebrow rail -->
+      <aside class="md:col-span-3" data-reveal>
+        <p class="text-[11px] uppercase tracking-[0.4em] text-muted-soft mb-3">
+          {t('contact.eyebrow')}
+        </p>
+      </aside>
+
+      <div class="md:col-span-8 md:col-start-5" data-reveal style="--reveal-delay: 100ms;">
+        <h1 class="font-serif text-[2.75rem] md:text-[4.5rem] leading-[1.02] tracking-[-0.02em] text-ink mb-10">
+          {t('contact.title')}
+        </h1>
+
+        <p class="text-lg md:text-xl text-muted max-w-xl leading-relaxed mb-14 font-light">
+          {t('contact.subtitle')}
+        </p>
+
+        <!-- Direct email — primary CTA -->
+        <div class="mb-16 pb-16 border-b border-line">
+          <p class="text-[11px] uppercase tracking-[0.3em] text-muted-soft mb-4">
+            {t('contact.email.label')}
+          </p>
+          <a
+            href="mailto:info@aldearts.com"
+            class="font-serif text-3xl md:text-4xl text-ink border-b border-ink pb-1 hover:opacity-60 transition-opacity"
+          >
+            info@aldearts.com
+          </a>
+        </div>
+
+        <!-- Form -->
+        <form id="contact-form" class="space-y-8" novalidate>
+          <div>
+            <label for="name" class="block text-[11px] uppercase tracking-[0.3em] text-muted-soft mb-2">
+              {t('contact.form.name')}
+            </label>
+            <input
+              type="text" id="name" name="name" required
+              class="w-full border-b border-line focus:border-ink bg-transparent py-3 outline-none transition-colors text-ink"
+            />
+          </div>
+
+          <div>
+            <label for="email" class="block text-[11px] uppercase tracking-[0.3em] text-muted-soft mb-2">
+              {t('contact.form.email')}
+            </label>
+            <input
+              type="email" id="email" name="email" required
+              class="w-full border-b border-line focus:border-ink bg-transparent py-3 outline-none transition-colors text-ink"
+            />
+          </div>
+
+          <div>
+            <label for="subject" class="block text-[11px] uppercase tracking-[0.3em] text-muted-soft mb-2">
+              {t('contact.form.subject')}
+            </label>
+            <input
+              type="text" id="subject" name="subject"
+              class="w-full border-b border-line focus:border-ink bg-transparent py-3 outline-none transition-colors text-ink"
+            />
+          </div>
+
+          <div>
+            <label for="message" class="block text-[11px] uppercase tracking-[0.3em] text-muted-soft mb-2">
+              {t('contact.form.message')}
+            </label>
+            <textarea
+              id="message" name="message" rows="5" required
+              class="w-full border-b border-line focus:border-ink bg-transparent py-3 outline-none transition-colors text-ink resize-none"
+            ></textarea>
+          </div>
+
+          <button
+            type="submit"
+            class="text-[11px] uppercase tracking-[0.35em] border border-ink px-10 py-4 hover:bg-ink hover:text-cream transition-colors"
+          >
+            {t('contact.form.submit')} →
+          </button>
+
+          <p class="text-xs text-muted-soft italic max-w-md">
+            {t('contact.form.note')}
+          </p>
+        </form>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<script>
+  function setupContact() {
+    const form = document.getElementById('contact-form') as HTMLFormElement | null;
+    if (!form) return;
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const data = new FormData(form);
+      const name = String(data.get('name') ?? '').trim();
+      const email = String(data.get('email') ?? '').trim();
+      const subject = String(data.get('subject') ?? '').trim() || 'AldeArts iletişim';
+      const message = String(data.get('message') ?? '').trim();
+      const body = `${message}\n\n— ${name} <${email}>`;
+      const mailto = `mailto:info@aldearts.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      window.location.href = mailto;
+    });
+  }
+  setupContact();
+  document.addEventListener('astro:after-swap', setupContact);
+</script>

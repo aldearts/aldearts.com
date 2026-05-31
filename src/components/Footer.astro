@@ -1,18 +1,72 @@
 ---
-import { getLangFromUrl, useTranslations } from '../i18n/utils';
+import { getLangFromUrl, useTranslations, localizePath } from '../i18n/utils';
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 const year = new Date().getFullYear();
 ---
 
-<footer class="border-t border-neutral-100 py-12 mt-32">
-  <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
-    <p class="text-xs uppercase tracking-[0.2em] text-neutral-400">
-      © {year} AldeArts. {t('footer.copyright')}.
-    </p>
-    <p class="text-xs uppercase tracking-[0.2em] text-neutral-300">
-      Made with Astro
-    </p>
+<footer class="border-t border-line-soft mt-32">
+  <div class="max-w-7xl mx-auto px-6 py-16 md:py-20">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8 mb-12">
+      <!-- Brand -->
+      <div>
+        <p class="flex items-baseline gap-2 mb-4">
+          <span class="font-serif italic text-2xl text-ink">Alde</span>
+          <span class="text-xs tracking-[0.35em] uppercase text-ink">Arts</span>
+        </p>
+        <p class="text-sm text-muted leading-relaxed max-w-xs">
+          {t('site.tagline')}
+        </p>
+      </div>
+
+      <!-- Quick links -->
+      <div>
+        <p class="text-[11px] uppercase tracking-[0.3em] text-muted-soft mb-5">
+          {t('footer.explore')}
+        </p>
+        <ul class="space-y-3">
+          {[
+            { key: 'nav.gallery' as const, path: '/gallery' },
+            { key: 'nav.about' as const, path: '/about' },
+            { key: 'nav.contact' as const, path: '/contact' },
+          ].map(({ key, path }) => (
+            <li>
+              <a
+                href={localizePath(path, lang)}
+                class="text-sm text-ink-soft hover:opacity-60 transition-opacity"
+              >
+                {t(key)}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- Contact -->
+      <div>
+        <p class="text-[11px] uppercase tracking-[0.3em] text-muted-soft mb-5">
+          {t('footer.contact')}
+        </p>
+        <a
+          href="mailto:info@aldearts.com"
+          class="block text-base text-ink-soft hover:opacity-60 transition-opacity mb-3"
+        >
+          info@aldearts.com
+        </a>
+        <p class="text-sm text-muted leading-relaxed max-w-xs">
+          {t('footer.contactDesc')}
+        </p>
+      </div>
+    </div>
+
+    <div class="pt-8 border-t border-line-soft flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
+      <p class="text-[11px] uppercase tracking-[0.25em] text-muted-soft">
+        © {year} AldeArts · {t('footer.copyright')}
+      </p>
+      <p class="text-[11px] uppercase tracking-[0.25em] text-muted-soft">
+        {lang === 'tr' ? 'İstanbul · Türkiye' : 'Istanbul · Türkiye'}
+      </p>
+    </div>
   </div>
 </footer>

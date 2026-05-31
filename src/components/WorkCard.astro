@@ -1,0 +1,164 @@
+---
+import { Image } from 'astro:assets';
+import type { Work } from '../data/works';
+import { mediumLabelsShort } from '../data/works';
+import { getLangFromUrl } from '../i18n/utils';
+
+interface Props {
+  work: Work;
+  index?: number;
+  /** Layout intent — 'gallery' uses the work's intrinsic aspect, 'featured' forces 4/5. */
+  variant?: 'gallery' | 'featured';
+  priority?: boolean;
+}
+
+const { work, index = 0, variant = 'gallery', priority = false } = Astro.props;
+const lang = getLangFromUrl(Astro.url);
+const aspect = variant === 'featured' ? 'aspect-[4/5]' : work.aspect;
+const mediumLabel = mediumLabelsShort[work.medium][lang];
+---
+
+<figure
+  class="work-card group"
+  data-reveal
+  data-work={work.id}
+  data-medium={work.medium}
+  style={`--reveal-delay: ${(index % 6) * 70}ms;`}
+>
+  <!-- Image / video frame -->
+  <div class:list={['relative overflow-hidden bg-paper-soft', aspect]}>
+    <Image
+      src={work.poster}
+      alt={work.title[lang]}
+      widths={[400, 600, 900, 1200]}
+      sizes="(min-width: 1024px) 32vw, (min-width: 640px) 48vw, 92vw"
+      quality={78}
+      loading={priority ? 'eager' : 'lazy'}
+      decoding={priority ? 'sync' : 'async'}
+      class="poster absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ease-out"
+    />
+
+    <video
+      class="video absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-700 ease-out pointer-events-none"
+      muted
+      loop
+      playsinline
+      preload="none"
+      aria-hidden="true"
+      data-src={work.video}
+    ></video>
+
+    <!-- Soft top-gradient so the play affordance is readable -->
+    <div class="absolute inset-0 bg-gradient-to-b from-ink/25 via-transparent to-transparent pointer-events-none"></div>
+
+    <!-- Play indicator -->
+    <button
+      type="button"
+      class="play-toggle absolute top-4 right-4 w-10 h-10 rounded-full bg-cream/85 backdrop-blur-sm flex items-center justify-center text-ink transition-all hover:scale-110"
+      aria-label={`Play ${work.title[lang]}`}
+    >
+      <svg viewBox="0 0 24 24" class="w-3.5 h-3.5 translate-x-[1px]" fill="currentColor" aria-hidden="true">
+        <path d="M8 5v14l11-7z" />
+      </svg>
+    </button>
+
+    <!-- Year — small bottom-right corner mark -->
+    <span class="absolute bottom-3 right-4 text-[10px] tracking-[0.25em] text-cream/70 hidden sm:block">
+      {work.year}
+    </span>
+  </div>
+
+  <!-- Museum-label caption -->
+  <figcaption class="pt-5 md:pt-6 px-1">
+    <p class="text-[10px] uppercase tracking-[0.4em] text-gold mb-2">
+      {mediumLabel}
+    </p>
+    <h3 class="font-serif text-xl md:text-2xl text-ink tracking-tight leading-tight mb-3">
+      {work.title[lang]}
+    </h3>
+    <p class="font-serif italic text-[15px] md:text-base text-muted leading-relaxed max-w-md">
+      {work.description[lang]}
+    </p>
+  </figcaption>
+</figure>
+
+<style>
+  .work-card.is-playing .poster {
+    opacity: 0;
+  }
+  .work-card.is-playing .video {
+    opacity: 1;
+  }
+  .work-card.is-playing .play-toggle {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .work-card .video {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  /*
+    Playback model — intentionally simple, no scroll-based autoplay.
+      Desktop (hover-capable): play on mouseenter, pause on mouseleave.
+      Touch:                   tap the ▶ button to play, tap again to pause.
+    Reduced motion: video hidden via CSS; tap still works as fallback.
+  */
+  function setupExhibitionPlayer() {
+    const cards = document.querySelectorAll<HTMLElement>('.work-card');
+    if (cards.length === 0) return;
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const hoverDevice =
+      window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+    function loadVideo(card: HTMLElement): HTMLVideoElement | null {
+      const video = card.querySelector<HTMLVideoElement>('video.video');
+      if (!video) return null;
+      if (!video.src) {
+        const src = video.dataset.src;
+        if (src) video.src = src;
+      }
+      return video;
+    }
+
+    async function play(card: HTMLElement) {
+      const video = loadVideo(card);
+      if (!video) return;
+      try {
+        await video.play();
+        card.classList.add('is-playing');
+      } catch {
+        /* play blocked; require user gesture */
+      }
+    }
+
+    function pause(card: HTMLElement) {
+      const video = card.querySelector<HTMLVideoElement>('video.video');
+      if (!video) return;
+      video.pause();
+      card.classList.remove('is-playing');
+    }
+
+    cards.forEach((card) => {
+      const toggle = card.querySelector<HTMLButtonElement>('.play-toggle');
+      toggle?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (card.classList.contains('is-playing')) pause(card);
+        else play(card);
+      });
+
+      if (hoverDevice && !reduceMotion) {
+        card.addEventListener('mouseenter', () => play(card));
+        card.addEventListener('mouseleave', () => pause(card));
+      }
+    });
+  }
+
+  setupExhibitionPlayer();
+  document.addEventListener('astro:after-swap', setupExhibitionPlayer);
+</script>

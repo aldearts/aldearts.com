@@ -1,0 +1,116 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import WorkCard from '../WorkCard.astro';
+import { getLangFromUrl } from '../../i18n/utils';
+import { exhibition, mediumLabels, worksByMedium } from '../../data/works';
+
+const lang = getLangFromUrl(Astro.url);
+
+const stainedGlass = worksByMedium('stained-glass');
+const crochet      = worksByMedium('crochet');
+
+const sections = [
+  {
+    id: 'cam-alti',
+    medium: 'stained-glass' as const,
+    works: stainedGlass,
+    intro: {
+      tr: 'Camın arkasına sürülen boya, ışıkla derinleşen renkler. Geleneksel cam altı tekniğinin su altına bakışı.',
+      en: 'Paint applied behind glass, colours deepened by passing light. A traditional reverse-glass technique looking underwater.',
+    },
+  },
+  {
+    id: 'orgu-3b',
+    medium: 'crochet' as const,
+    works: crochet,
+    intro: {
+      tr: 'Her ilmek bir polip. Üç boyutta dokunulabilen mercanlar, balıklar ve resif sahneleri.',
+      en: 'Every stitch a polyp. Coral, fish and reef scenes you can touch in three dimensions.',
+    },
+  },
+];
+---
+
+<Layout
+  title={exhibition.title[lang]}
+  description={`${exhibition.title[lang]} — ${exhibition.subtitle[lang]}`}
+>
+  <!-- Exhibition header -->
+  <section class="max-w-7xl mx-auto px-6 pt-16 md:pt-28 pb-10 md:pb-14">
+    <p class="text-[11px] uppercase tracking-[0.4em] text-muted-soft mb-5 md:mb-6" data-reveal>
+      {lang === 'tr' ? 'Güncel Sergi' : 'Current Exhibition'} · {exhibition.year}
+    </p>
+    <h1
+      class="font-serif text-[2.5rem] sm:text-[3.5rem] md:text-[5.5rem] leading-[0.95] tracking-[-0.02em] text-ink mb-6 md:mb-8"
+      data-reveal
+    >
+      {exhibition.title[lang]}
+    </h1>
+    <p
+      class="text-base md:text-lg text-muted max-w-2xl leading-relaxed font-light mb-10 md:mb-12"
+      data-reveal
+      style="--reveal-delay: 120ms;"
+    >
+      {exhibition.subtitle[lang]}
+    </p>
+
+    <!-- Section jump links -->
+    <div class="flex flex-wrap gap-x-8 gap-y-3" data-reveal style="--reveal-delay: 200ms;">
+      {sections.map(({ id, medium, works }) => (
+        <a
+          href={`#${id}`}
+          class="group inline-flex items-baseline gap-3 text-[11px] uppercase tracking-[0.3em] text-muted hover:text-gold transition-colors"
+        >
+          <span class="text-muted-soft">{String(works.length).padStart(2, '0')}</span>
+          <span class="border-b border-line group-hover:border-gold transition-colors pb-1">
+            {mediumLabels[medium][lang]}
+          </span>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <!-- Sections per medium -->
+  {sections.map(({ id, medium, works, intro }, sectionIdx) => (
+    <section
+      id={id}
+      class="max-w-7xl mx-auto px-6 pb-20 md:pb-28 scroll-mt-24"
+    >
+      <!-- Section header -->
+      <div class="border-t border-line pt-12 md:pt-16 mb-10 md:mb-12 grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8">
+        <div class="md:col-span-3" data-reveal>
+          <p class="text-[10px] uppercase tracking-[0.4em] text-gold mb-3">
+            {String(sectionIdx + 1).padStart(2, '0')} / 02
+          </p>
+          <h2 class="font-serif text-2xl md:text-3xl tracking-tight text-ink">
+            {mediumLabels[medium][lang]}
+          </h2>
+        </div>
+        <div class="md:col-span-7 md:col-start-5" data-reveal style="--reveal-delay: 100ms;">
+          <p class="text-base md:text-lg text-muted leading-relaxed font-light max-w-2xl">
+            {intro[lang]}
+          </p>
+          <p class="text-[11px] uppercase tracking-[0.3em] text-muted-soft mt-6">
+            {works.length} {lang === 'tr' ? 'eser' : 'works'}
+          </p>
+        </div>
+      </div>
+
+      <!-- Works grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+        {works.map((work, i) => (
+          <WorkCard work={work} index={i} priority={sectionIdx === 0 && i < 3} />
+        ))}
+      </div>
+    </section>
+  ))}
+
+  <p
+    class="text-center text-sm md:text-base text-muted-soft mt-4 mb-24 md:mb-32 italic font-serif px-6"
+    data-reveal
+  >
+    {lang === 'tr'
+      ? 'Bu sergi büyümeye devam ediyor — yeni eserler eklendikçe burada belirecek.'
+      : 'This exhibition keeps growing — new works will appear here as they are added.'}
+  </p>
+</Layout>

@@ -11,17 +11,25 @@ function getUrlForLang(lang: string): string {
 }
 ---
 
-<div class="flex items-center gap-3 text-xs uppercase tracking-[0.25em]">
+<div class="flex items-center gap-2 text-[11px] tracking-[0.3em] uppercase">
   <a
     href={getUrlForLang('tr')}
-    class:list={['transition-colors', currentLang === 'tr' ? 'text-black' : 'text-neutral-400 hover:text-black']}
+    aria-current={currentLang === 'tr' ? 'true' : undefined}
+    class:list={[
+      'transition-colors',
+      currentLang === 'tr' ? 'text-ink' : 'text-muted-soft hover:text-ink',
+    ]}
   >
     TR
   </a>
-  <span class="text-neutral-300">/</span>
+  <span class="text-line">·</span>
   <a
     href={getUrlForLang('en')}
-    class:list={['transition-colors', currentLang === 'en' ? 'text-black' : 'text-neutral-400 hover:text-black']}
+    aria-current={currentLang === 'en' ? 'true' : undefined}
+    class:list={[
+      'transition-colors',
+      currentLang === 'en' ? 'text-ink' : 'text-muted-soft hover:text-ink',
+    ]}
   >
     EN
   </a>

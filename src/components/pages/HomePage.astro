@@ -1,0 +1,120 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import WorkCard from '../WorkCard.astro';
+import { getLangFromUrl, useTranslations, localizePath } from '../../i18n/utils';
+import { exhibition, featuredWorks } from '../../data/works';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const featured = featuredWorks();
+---
+
+<Layout title={t('nav.home')} description={t('site.tagline')}>
+  <!-- Hero -->
+  <section class="relative max-w-7xl mx-auto px-6 pt-16 sm:pt-24 md:pt-36 pb-10 md:pb-20 overflow-hidden">
+    <div class="relative max-w-4xl">
+      <p
+        class="text-[10px] sm:text-[11px] uppercase tracking-[0.4em] text-muted-soft mb-6 md:mb-8"
+        data-reveal
+      >
+        {lang === 'tr' ? 'Güncel Sergi' : 'Current Exhibition'} · {exhibition.year}
+      </p>
+
+      <h1
+        class="font-serif text-[3rem] xs:text-[3.5rem] sm:text-[5rem] md:text-[6.5rem] lg:text-[8rem] leading-[0.92] tracking-[-0.02em] text-ink mb-8 md:mb-10"
+        data-reveal
+      >
+        <span class="block">{exhibition.title[lang]}</span>
+        <span class="block italic text-ink/70 text-[2rem] sm:text-[3rem] md:text-[4rem] lg:text-[4.5rem] mt-2 md:mt-4">
+          {lang === 'tr' ? 'cam ve iplik' : 'glass & thread'}
+        </span>
+      </h1>
+
+      <p
+        class="text-base sm:text-lg md:text-xl text-muted max-w-xl leading-relaxed mb-10 md:mb-14 font-light"
+        data-reveal
+        style="--reveal-delay: 120ms;"
+      >
+        {exhibition.subtitle[lang]}
+      </p>
+
+      <a
+        href={localizePath('/gallery', lang)}
+        class="group inline-flex items-center gap-3 text-xs uppercase tracking-[0.3em] text-ink"
+        data-reveal
+        style="--reveal-delay: 200ms;"
+      >
+        <span class="border-b border-ink pb-1 group-hover:opacity-60 transition-opacity">
+          {lang === 'tr' ? 'Sergiyi gez' : 'View exhibition'}
+        </span>
+        <span class="transition-transform group-hover:translate-x-1">→</span>
+      </a>
+    </div>
+
+    <!-- Decorative typography rail (desktop only) -->
+    <div class="hidden lg:block absolute right-6 top-40 w-px h-48 bg-line"></div>
+    <div class="hidden lg:block absolute right-6 top-[15.5rem] text-[10px] uppercase tracking-[0.4em] text-muted-soft origin-top-right rotate-90 translate-x-full">
+      AldeArts · MMXXVI
+    </div>
+  </section>
+
+  <!-- Featured works -->
+  <section class="max-w-7xl mx-auto px-6 pb-20 md:pb-28">
+    <div class="flex items-end justify-between mb-8 md:mb-12" data-reveal>
+      <div>
+        <p class="text-[10px] sm:text-[11px] uppercase tracking-[0.35em] text-muted-soft mb-2 md:mb-3">
+          {lang === 'tr' ? 'Öne çıkan üç eser' : 'Three featured works'}
+        </p>
+        <h2 class="font-serif text-2xl sm:text-3xl md:text-4xl tracking-tight text-ink">
+          {lang === 'tr' ? 'Sergiden seçkiler' : 'From the exhibition'}
+        </h2>
+      </div>
+      <a
+        href={localizePath('/gallery', lang)}
+        class="hidden sm:inline-block text-[11px] uppercase tracking-[0.3em] text-muted hover:text-ink transition-colors whitespace-nowrap"
+      >
+        {lang === 'tr' ? 'Tümünü gör' : 'View all'} →
+      </a>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+      {featured.map((work, i) => (
+        <WorkCard work={work} index={i} variant="featured" priority />
+      ))}
+    </div>
+  </section>
+
+  <!-- Intro / two-medium dialogue -->
+  <section class="border-t border-line">
+    <div class="max-w-7xl mx-auto px-6 py-20 md:py-32 grid grid-cols-1 md:grid-cols-12 gap-8">
+      <div class="md:col-span-3" data-reveal>
+        <p class="text-[11px] uppercase tracking-[0.35em] text-muted-soft">
+          {lang === 'tr' ? 'İki Malzeme' : 'Two Mediums'}
+        </p>
+      </div>
+
+      <div
+        class="md:col-span-8 md:col-start-5"
+        data-reveal
+        style="--reveal-delay: 120ms;"
+      >
+        <h2 class="font-serif text-2xl sm:text-3xl md:text-5xl leading-[1.15] tracking-[-0.015em] text-ink mb-6 md:mb-8">
+          {lang === 'tr'
+            ? 'Camın berraklığı ile yünün sıcaklığı — aynı denizin altında buluşuyor.'
+            : 'The clarity of glass and the warmth of yarn — meeting under the same sea.'}
+        </h2>
+        <p class="text-base md:text-lg text-muted max-w-2xl leading-relaxed mb-8 md:mb-10 font-light">
+          {lang === 'tr'
+            ? 'Cam altı resimleri, geleneksel bir tekniğin yeniden yorumu: boya camın arkasına sürülür, ışık önden geçtikçe renkler derinleşir. Üç boyutlu örgüler ise her ilmekte bir polip, bir mercan, bir balık doğurur. AldeArts bu iki dilin diyaloğu — biri sertin içinde yumuşaklığı, diğeri yumuşağın içinde sertliği arıyor.'
+            : 'Reverse glass painting is the reinterpretation of an old technique: paint applied behind the glass, colours deepening as light moves through. Three-dimensional crochet gives birth to a polyp, a coral, a fish with every stitch. AldeArts is a dialogue between these two languages — one finding softness inside the hard, the other hardness inside the soft.'}
+        </p>
+        <a
+          href={localizePath('/about', lang)}
+          class="inline-block text-[11px] uppercase tracking-[0.3em] text-ink border-b border-ink pb-1 hover:opacity-60 transition-opacity"
+        >
+          {lang === 'tr' ? 'Sanatçı hakkında' : 'About the artist'} →
+        </a>
+      </div>
+    </div>
+  </section>
+</Layout>

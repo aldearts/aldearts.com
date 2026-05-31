@@ -1,0 +1,45 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getLangFromUrl, useTranslations, localizePath } from '../../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+---
+
+<Layout title={t('about.title')} description={t('about.placeholder')}>
+  <section class="max-w-7xl mx-auto px-6 pt-20 md:pt-28 pb-32">
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
+      <!-- Eyebrow rail -->
+      <aside class="md:col-span-3" data-reveal>
+        <p class="text-[11px] uppercase tracking-[0.4em] text-muted-soft mb-3">
+          {t('about.eyebrow')}
+        </p>
+        <p class="text-[11px] uppercase tracking-[0.3em] text-muted-soft">
+          AldeArts · 2026
+        </p>
+      </aside>
+
+      <!-- Content -->
+      <div class="md:col-span-8 md:col-start-5 max-w-2xl" data-reveal style="--reveal-delay: 120ms;">
+        <h1 class="font-serif text-[2.75rem] md:text-[4.5rem] leading-[1.02] tracking-[-0.02em] text-ink mb-10">
+          {t('about.title')}
+        </h1>
+
+        <p class="font-serif italic text-2xl md:text-3xl text-ink-soft leading-snug mb-10">
+          {t('about.placeholder')}
+        </p>
+
+        <p class="text-lg text-muted leading-relaxed font-light max-w-xl mb-12">
+          {t('about.placeholder.body')}
+        </p>
+
+        <a
+          href={localizePath('/contact', lang)}
+          class="inline-block text-[11px] uppercase tracking-[0.3em] text-ink border-b border-ink pb-1 hover:opacity-60 transition-opacity"
+        >
+          {t('nav.contact')} →
+        </a>
+      </div>
+    </div>
+  </section>
+</Layout>

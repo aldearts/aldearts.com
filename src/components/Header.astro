@@ -12,34 +12,103 @@ const navItems = [
   { key: 'nav.about' as const, path: '/about' },
   { key: 'nav.contact' as const, path: '/contact' },
 ];
+
+function isActive(path: string): boolean {
+  return currentPath === path || (path !== '/' && currentPath.startsWith(path));
+}
 ---
 
-<header class="sticky top-0 z-50 bg-white/85 backdrop-blur-md border-b border-neutral-100">
+<header
+  class="sticky top-0 z-50 bg-paper/85 backdrop-blur-md border-b border-line-soft"
+  transition:persist
+>
   <div class="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
+    <!-- Brand -->
     <a
       href={localizePath('/', lang)}
-      class="text-xl tracking-[0.25em] uppercase hover:opacity-70 transition-opacity"
+      class="group flex items-baseline gap-2 hover:opacity-70 transition-opacity"
+      aria-label="AldeArts — Anasayfa"
     >
-      AldeArts
+      <span class="font-serif italic text-2xl tracking-tight text-ink">Alde</span>
+      <span class="text-xs tracking-[0.35em] uppercase text-ink">Arts</span>
     </a>
 
-    <nav class="hidden md:flex items-center gap-10">
-      {navItems.map(({ key, path }) => {
-        const isActive = currentPath === path || (path !== '/' && currentPath.startsWith(path));
-        return (
-          <a
-            href={localizePath(path, lang)}
-            class:list={[
-              'text-xs uppercase tracking-[0.2em] transition-colors',
-              isActive ? 'text-black' : 'text-neutral-500 hover:text-black',
-            ]}
-          >
-            {t(key)}
-          </a>
-        );
-      })}
+    <!-- Desktop nav -->
+    <nav class="hidden md:flex items-center gap-10" aria-label="Main">
+      {navItems.map(({ key, path }) => (
+        <a
+          href={localizePath(path, lang)}
+          class:list={[
+            'relative text-xs uppercase tracking-[0.22em] transition-colors py-2',
+            isActive(path) ? 'text-ink' : 'text-muted hover:text-ink',
+          ]}
+        >
+          {t(key)}
+          {isActive(path) && (
+            <span class="absolute left-0 right-0 -bottom-px h-px bg-ink"></span>
+          )}
+        </a>
+      ))}
     </nav>
 
-    <LanguageSwitcher />
+    <div class="flex items-center gap-5">
+      <LanguageSwitcher />
+
+      <!-- Mobile toggle -->
+      <button
+        type="button"
+        id="menu-toggle"
+        class="md:hidden flex items-center justify-center w-9 h-9 -mr-2"
+        aria-label="Menu"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+      >
+        <span class="sr-only">Menu</span>
+        <span class="relative block w-5 h-px bg-ink before:content-[''] before:absolute before:left-0 before:-top-1.5 before:w-5 before:h-px before:bg-ink before:transition-transform after:content-[''] after:absolute after:left-0 after:top-1.5 after:w-5 after:h-px after:bg-ink after:transition-transform" id="menu-icon"></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile menu -->
+  <div
+    id="mobile-menu"
+    class="md:hidden hidden border-t border-line-soft bg-paper"
+  >
+    <nav class="max-w-7xl mx-auto px-6 py-8 flex flex-col gap-6" aria-label="Mobile">
+      {navItems.map(({ key, path }) => (
+        <a
+          href={localizePath(path, lang)}
+          class:list={[
+            'text-2xl font-serif tracking-tight transition-colors',
+            isActive(path) ? 'text-ink italic' : 'text-muted hover:text-ink',
+          ]}
+        >
+          {t(key)}
+        </a>
+      ))}
+    </nav>
   </div>
 </header>
+
+<script>
+  function setupMenu() {
+    const toggle = document.getElementById('menu-toggle');
+    const menu = document.getElementById('mobile-menu');
+    if (!toggle || !menu) return;
+
+    toggle.addEventListener('click', () => {
+      const open = menu.classList.toggle('hidden') === false;
+      toggle.setAttribute('aria-expanded', String(open));
+    });
+
+    // Close menu when navigating
+    menu.querySelectorAll('a').forEach((a) =>
+      a.addEventListener('click', () => {
+        menu.classList.add('hidden');
+        toggle.setAttribute('aria-expanded', 'false');
+      })
+    );
+  }
+  setupMenu();
+  document.addEventListener('astro:after-swap', setupMenu);
+</script>

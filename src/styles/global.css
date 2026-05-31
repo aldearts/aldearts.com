@@ -1,1 +1,109 @@
 @import "tailwindcss";
+
+/*
+  Design tokens — "gallery night" palette.
+
+  Semantic names (use these in components):
+    --color-paper         main background (the wall)
+    --color-paper-soft    surface / card body (slightly lifted from the wall)
+    --color-ink           main text (the ink on the wall)
+    --color-ink-soft      slightly muted text
+    --color-muted         secondary text
+    --color-muted-soft    tertiary text / decorative
+    --color-line          dividers, borders
+    --color-line-soft     even subtler dividers
+    --color-cream         literal cream (always light) — for captions over dark overlays
+    --color-gold          warm gold accent — sparingly, for links / emphasis
+*/
+
+@theme {
+  --color-paper:       #181715;
+  --color-paper-soft:  #22201d;
+  --color-ink:         #f0ebe1;
+  --color-ink-soft:    #d9d3c4;
+  --color-muted:       #a39b89;
+  --color-muted-soft:  #6f6859;
+  --color-line:        #2e2b27;
+  --color-line-soft:   #25221f;
+  --color-cream:       #f0ebe1;
+  --color-gold:        #c9a567;
+
+  --font-sans:  'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-serif: 'Cormorant Garamond', 'EB Garamond', Georgia, 'Times New Roman', serif;
+}
+
+html {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+}
+
+::selection {
+  background-color: var(--color-gold);
+  color: var(--color-paper);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 3px;
+  border-radius: 1px;
+}
+
+.font-serif {
+  font-family: var(--font-serif);
+  font-feature-settings: 'liga', 'kern', 'onum';
+}
+
+/* Scroll reveal */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity 650ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 650ms cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+
+@media (min-width: 768px) {
+  [data-reveal] {
+    transform: translateY(24px);
+    transition-duration: 900ms;
+  }
+}
+
+[data-reveal].is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* Comfortable tap targets on touch devices */
+@media (hover: none) and (pointer: coarse) {
+  button,
+  a[role='button'],
+  .filter-btn,
+  .play-toggle {
+    min-height: 44px;
+  }
+}
+
+/* Astro view transitions */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 320ms;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
