@@ -4,9 +4,11 @@ import tailwindcss from '@tailwindcss/vite';
 
 import sitemap from '@astrojs/sitemap';
 
-import cloudflare from '@astrojs/cloudflare';
-
 // https://astro.build/config
+//
+// Pure static — no SSR adapter. Cloudflare serves dist/ as Workers Static
+// Assets. Astro Image pre-generates /_astro/*.webp variants at build time,
+// so the runtime /_image endpoint is not needed.
 export default defineConfig({
   site: 'https://aldearts.com',
 
@@ -23,5 +25,4 @@ export default defineConfig({
   },
 
   integrations: [sitemap()],
-  adapter: cloudflare(),
 });
